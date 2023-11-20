@@ -16,13 +16,20 @@ int main(int argc, char *argv[])
 	char buffer[256];
 	struct sockaddr_in serv_addr, cli_addr;
 	
+	if (argc < 2) {
+		fprintf(stderr,"usage ./%s <port> \n", argv[0]);
+		exit(0);
+    }
+
+	int port = atoi(argv[1]);
+
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         fprintf(stderr, "server: Error opening socket");
 		exit(ERR_SOCK_OPEN);
 	}
 	
 	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_port = htons(PORT);
+	serv_addr.sin_port = htons(port);
 	serv_addr.sin_addr.s_addr = INADDR_ANY;
 	bzero(&(serv_addr.sin_zero), 8);     
     
@@ -31,7 +38,7 @@ int main(int argc, char *argv[])
 		exit(ERR_SOCK_BIND);
 	}
 
-	printf("Server listening on %s:%d\n", inet_ntoa(serv_addr.sin_addr), PORT);
+	printf("Server listening on %s:%d\n", inet_ntoa(serv_addr.sin_addr), port);
 	
 	listen(sockfd, 5);
 	

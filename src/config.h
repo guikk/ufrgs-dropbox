@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define PORT 4000
+#define MAX_SESSIONS 2
 
 #define ERR_INVALID_HOST  1
 #define ERR_SOCK_OPEN     2

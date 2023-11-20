@@ -13,15 +13,21 @@ int main(int argc, char *argv[])
 {
     int sockfd, n;
     struct sockaddr_in serv_addr;
+
+    char username[50];
     struct hostent *server;
+    int port;
 	
     char buffer[256];
-    if (argc < 2) {
-		fprintf(stderr,"usage %s hostname\n", argv[0]);
+    if (argc < 4) {
+		fprintf(stderr,"usage ./%s <username> <server_ip_address> <port> \n", argv[0]);
 		exit(0);
     }
+
+    strcpy(username, argv[1]);
+	server = gethostbyname(argv[2]);
+    port = atoi(argv[3]);
 	
-	server = gethostbyname(argv[1]);
 	if (server == NULL) {
         fprintf(stderr,"client: Error - no such host\n");
         exit(ERR_INVALID_HOST);
@@ -32,10 +38,10 @@ int main(int argc, char *argv[])
         exit(ERR_SOCK_OPEN);
     }
     
-	serv_addr.sin_family = AF_INET;     
-	serv_addr.sin_port = htons(PORT);    
+	serv_addr.sin_family = AF_INET;   
+	serv_addr.sin_port = htons(port);   
 	serv_addr.sin_addr = *((struct in_addr *) server->h_addr);
-	bzero(&(serv_addr.sin_zero), 8);     
+	bzero(&(serv_addr.sin_zero), 8);    
 	
     
 	if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
