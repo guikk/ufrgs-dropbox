@@ -6,10 +6,10 @@ build:
 	@gcc -o client.out client.o
 
 client:
-	@./client.out $(username) $(host) $(port)
+	@./client.out guikk localhost 4000 # $(username) $(host) $(port)
 
 server:
-	@./server.out $(port)
+	@./server.out 4000 # $(port)
 
 clean:
 	@rm -rf *.o *.out
