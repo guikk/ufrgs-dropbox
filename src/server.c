@@ -7,14 +7,19 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include "config.h"
+#include "errors.h"
+
+int start(int port);
+int accept_client(int sockfd);
+void read_from(int sockfd);
+void write_to(int sockfd, char* message);
+
+char buffer[256];
 
 int main(int argc, char *argv[])
 {
-	int sockfd, newsockfd, n;
-	socklen_t clilen;
-	char buffer[256];
-	struct sockaddr_in serv_addr, cli_addr;
+	int sockfd, newsockfd;
+	struct sockaddr_in serv_addr;
 	
 	if (argc < 2) {
 		fprintf(stderr,"usage ./%s <port> \n", argv[0]);
@@ -22,6 +27,25 @@ int main(int argc, char *argv[])
     }
 
 	int port = atoi(argv[1]);
+
+	sockfd = start(port);
+	
+	newsockfd = accept_client(sockfd);
+	
+	bzero(buffer, 256);
+	
+	read_from(newsockfd);
+	
+	write_to(newsockfd, "server: I got your message");
+
+	close(newsockfd);
+	close(sockfd);
+	return 0; 
+}
+
+int start(int port) {
+	int sockfd;
+	struct sockaddr_in serv_addr;
 
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         fprintf(stderr, "server: Error opening socket");
@@ -37,35 +61,47 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "server: Error on binding");
 		exit(ERR_SOCK_BIND);
 	}
-
-	printf("Server listening on %s:%d\n", inet_ntoa(serv_addr.sin_addr), port);
 	
 	listen(sockfd, 5);
-	
+	printf("Server listening on port %d\n", port);
+
+	return sockfd;
+}
+
+int accept_client(int sockfd) {
+	int newsockfd;
+	socklen_t clilen;
+	struct sockaddr_in cli_addr;
+
 	clilen = sizeof(struct sockaddr_in);
 	if ((newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen)) == -1) {
 		fprintf(stderr, "server: Error on accept");
 		exit(ERR_SOCK_ACCEPT);
 	}
-	
-	bzero(buffer, 256);
-	
-	/* read from socket */
-	n = read(newsockfd, buffer, 256);
-	if (n < 0) {
+
+	return newsockfd;
+}
+
+void read_from(int sockfd) {
+    int n;
+    bzero(buffer,256);
+
+    n = read(sockfd, buffer, 256);
+    if (n < 0) {
 		fprintf(stderr, "server: Error reading from socket\n");
         exit(ERR_SOCK_READ);
     }
-	printf("client: %s\n", buffer);
-	
-	/* write in socket */ 
-	n = write(newsockfd, "server: I got your message", 26);
-	if (n < 0) {
-		fprintf(stderr, "server: Error writing to socket\n");
+
+    printf("server: Read %d bytes from socket %d\n< %s\n", n, sockfd, buffer);
+}
+
+void write_to(int sockfd, char* message) {
+    int n;
+	n = write(sockfd, message, strlen(message));
+    if (n < 0) {
+		fprintf(stderr, "server: Error writing to socket %d\n", sockfd);
         exit(ERR_SOCK_WRITE);
     }
 
-	close(newsockfd);
-	close(sockfd);
-	return 0; 
+    printf("server: Sent %d bytes to socket %d\n", n, sockfd);
 }
