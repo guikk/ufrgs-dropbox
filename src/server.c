@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 
 #include "errors.h"
+#include "files.h"
 
 int start(int port);
 int accept_client(int sockfd);
@@ -34,13 +35,14 @@ int main(int argc, char *argv[])
 	
 	bzero(buffer, 256);
 	
-	read_from(newsockfd);
+	recv_file(sockfd);
+	// read_from(newsockfd);
 	
 	write_to(newsockfd, "server: I got your message");
 
 	close(newsockfd);
 	close(sockfd);
-	return 0; 
+	return 0;
 }
 
 int start(int port) {

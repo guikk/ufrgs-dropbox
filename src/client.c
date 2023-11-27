@@ -9,6 +9,7 @@
 #include <netdb.h>
 
 #include "errors.h"
+#include "files.h"
 
 int connect_to_server(struct hostent *server, int port);
 void read_from(int sockfd);
@@ -43,9 +44,10 @@ int main(int argc, char *argv[])
 
     printf("> ");
     bzero(buffer, 256);
-    fgets(buffer, 256, stdin);
+    fscanf(stdin, "%s\n", buffer);
     
-    write_to(sockfd, buffer);
+    send_file(sockfd, buffer);
+    // write_to(sockfd, buffer);
 
     read_from(sockfd);
     

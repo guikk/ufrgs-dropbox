@@ -1,9 +1,9 @@
 all: clean build
 
 build:
-	@gcc -c server.c client.c
-	@gcc -o server.out server.o
-	@gcc -o client.out client.o
+	@gcc -c *.c
+	@gcc -o server.out server.o files.o
+	@gcc -o client.out client.o files.o
 
 client:
 	@./client.out guikk localhost 4000 # $(username) $(host) $(port)
