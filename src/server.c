@@ -20,7 +20,6 @@ char buffer[256];
 int main(int argc, char *argv[])
 {
 	int sockfd, newsockfd;
-	struct sockaddr_in serv_addr;
 	
 	if (argc < 2) {
 		fprintf(stderr,"usage ./%s <port> \n", argv[0]);
@@ -35,7 +34,7 @@ int main(int argc, char *argv[])
 	
 	bzero(buffer, 256);
 	
-	recv_file(sockfd);
+	recv_file(newsockfd);
 	// read_from(newsockfd);
 	
 	write_to(newsockfd, "server: I got your message");
@@ -50,7 +49,7 @@ int start(int port) {
 	struct sockaddr_in serv_addr;
 
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-        fprintf(stderr, "server: Error opening socket");
+        fprintf(stderr, "server: Error opening socket\n");
 		exit(ERR_SOCK_OPEN);
 	}
 	
@@ -60,12 +59,12 @@ int start(int port) {
 	bzero(&(serv_addr.sin_zero), 8);     
     
 	if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-		fprintf(stderr, "server: Error on binding");
+		fprintf(stderr, "server: Error on binding\n");
 		exit(ERR_SOCK_BIND);
 	}
 	
 	listen(sockfd, 5);
-	printf("Server listening on port %d\n", port);
+	printf("Server listening on port %d (socket %d)\n", port, sockfd);
 
 	return sockfd;
 }
@@ -80,6 +79,8 @@ int accept_client(int sockfd) {
 		fprintf(stderr, "server: Error on accept");
 		exit(ERR_SOCK_ACCEPT);
 	}
+	
+	printf("New connection accepted using socket %d\n", newsockfd);
 
 	return newsockfd;
 }

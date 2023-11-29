@@ -14,7 +14,7 @@ CLIENT_OBJ := $(CLIENT_SRC:.c=.o)
 FILES_OBJ := $(FILES_SRC:.c=.o)
 
 # Libraries
-LIBS := -Llib -lcereal
+LIBS := -Llib #-lcereal
 
 # Output executables
 SERVER_EXE := server
@@ -23,14 +23,14 @@ CLIENT_EXE := client
 all: $(SERVER_EXE) $(CLIENT_EXE)
 
 $(SERVER_EXE): $(SERVER_OBJ) $(FILES_OBJ)
-	@$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
 $(CLIENT_EXE): $(CLIENT_OBJ) $(FILES_OBJ)
-	@$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
 # Pattern rule for compiling source files
 %.o: %.c
-	@$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 run_client:
 	@./client guikk localhost 4000 # $(username) $(host) $(port)

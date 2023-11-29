@@ -12,7 +12,7 @@ void send_file(int sockfd, char* path) {
     struct stat st;
 	
 	if ((fd = open(path, O_RDONLY)) == -1) {
-		fprintf(stderr, "server: Cannot open file '%s\n'", path);
+		fprintf(stderr, "server: Cannot open file '%s'\n", path);
         exit(1);
 	}
 
@@ -26,24 +26,32 @@ void send_file(int sockfd, char* path) {
     read(fd, (void*) p._payload, p.length);
     close(fd);
 
-    int bsent = 0;
-    while (bsent < sizeof(packet)) {
-        bsent += write(sockfd, &p + bsent, sizeof(packet) - bsent);
+    // send file length
+    // write(sockfd,)
 
-    }
-}
+    int bsent = 0;
+    bsent += write(sockfd, p._payload + bsent, p.length - bsent);
+    // while (bsent < p.length) {
+    //     bsent += write(sockfd, p._payload + bsent, p.length - bsent);
+    // }
+    printf("Sent %d/%d bytes from file %s\n", bsent, p.length, path);
+} 
 
 void recv_file(int sockfd) {
-    packet *p;
+    char buffer[1024];
     int bread = 0;
-    while (bread < sizeof(packet)) {
-        bread += read(sockfd, p + bread, sizeof(packet) - bread);
-
+    bread += read(sockfd, buffer + bread, 1024);
+    // while (bread > 0) {
+    //     bread += read(sockfd, buffer + bread, 1024);
+    // }
+    if (bread < 0) {
+        fprintf(stderr, "Error reading file\n");
+        return;
     }
-    if (!p) {
-        fprintf(stderr, "Error reading file");
+    if (bread == 0) {
+        fprintf(stderr, "Error reading file: connection closed\n");
         return;
     }
 
-    printf("Read packet of size %d, with this content:\n%s", p->length, p->_payload);
+    printf("Read file of size %d, with this content:\n%s", bread, buffer);
 }

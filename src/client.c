@@ -42,11 +42,11 @@ int main(int argc, char *argv[])
 	
     sockfd = connect_to_server(server, port);
 
-    printf("> ");
-    bzero(buffer, 256);
-    fscanf(stdin, "%s\n", buffer);
+    // printf("Which file do you want to send?\n> ");
+    // bzero(buffer, 256);
+    // fscanf(stdin, "%s\n", buffer);
     
-    send_file(sockfd, buffer);
+    send_file(sockfd, "/home/guikk/ufrgs-dropbox/teste.txt");//buffer);
     // write_to(sockfd, buffer);
 
     read_from(sockfd);
