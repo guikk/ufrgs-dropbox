@@ -7,15 +7,11 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include "errors.h"
-#include "files.h"
+#include <errors.hpp>
+#include <files.hpp>
 
 int start(int port);
 int accept_client(int sockfd);
-void read_from(int sockfd);
-void write_to(int sockfd, char* message);
-
-char buffer[256];
 
 int main(int argc, char *argv[])
 {
@@ -32,12 +28,7 @@ int main(int argc, char *argv[])
 	
 	newsockfd = accept_client(sockfd);
 	
-	bzero(buffer, 256);
-	
-	recv_file(newsockfd);
-	// read_from(newsockfd);
-	
-	write_to(newsockfd, "server: I got your message");
+	recv_file(newsockfd, "server/");
 
 	close(newsockfd);
 	close(sockfd);
@@ -85,26 +76,3 @@ int accept_client(int sockfd) {
 	return newsockfd;
 }
 
-void read_from(int sockfd) {
-    int n;
-    bzero(buffer,256);
-
-    n = read(sockfd, buffer, 256);
-    if (n < 0) {
-		fprintf(stderr, "server: Error reading from socket\n");
-        exit(ERR_SOCK_READ);
-    }
-
-    printf("server: Read %d bytes from socket %d\n< %s\n", n, sockfd, buffer);
-}
-
-void write_to(int sockfd, char* message) {
-    int n;
-	n = write(sockfd, message, strlen(message));
-    if (n < 0) {
-		fprintf(stderr, "server: Error writing to socket %d\n", sockfd);
-        exit(ERR_SOCK_WRITE);
-    }
-
-    printf("server: Sent %d bytes to socket %d\n", n, sockfd);
-}
